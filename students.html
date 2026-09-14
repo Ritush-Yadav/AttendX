@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Students{% endblock %}
+{% block page_title %}Students{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+  <form class="search-box" method="GET">
+    <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 10-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1114 9.5 4.5 4.5 0 019.5 14z"/></svg>
+    <input type="text" name="q" value="{{ query }}" placeholder="Search by name, roll no, department&hellip;">
+  </form>
+  <button class="btn btn-primary" id="open-add-student">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+    Add Student
+  </button>
+</div>
+
+<div class="panel glass-panel table-panel">
+  {% if students|length == 0 %}
+  <div class="empty-state">
+    <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
+    <h3>No students yet</h3>
+    <p>Add your first student to start building the face dataset.</p>
+  </div>
+  {% else %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th></th>
+        <th>Roll No</th>
+        <th>Name</th>
+        <th>Department</th>
+        <th>Year</th>
+        <th>Dataset</th>
+        <th>Model</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in students %}
+      <tr class="clickable-row" data-student-id="{{ s.id }}">
+        <td><div class="row-avatar">{{ s.name[0]|upper }}</div></td>
+        <td class="mono">{{ s.roll_no }}</td>
+        <td>{{ s.name }}</td>
+        <td>{{ s.department or '—' }}</td>
+        <td>{{ s.year or '—' }}</td>
+        <td>
+          <div class="mini-progress">
+            <div class="mini-progress-bar" style="width: {{ [ (s.samples_captured / target_samples * 100), 100 ] | min }}%"></div>
+          </div>
+          <span class="mono small">{{ s.samples_captured }}/{{ target_samples }}</span>
+        </td>
+        <td>
+          {% if s.trained %}
+          <span class="badge badge-green">Trained</span>
+          {% else %}
+          <span class="badge badge-amber">Pending</span>
+          {% endif %}
+        </td>
+        <td class="row-actions">
+          <a href="{{ url_for('capture_page', student_id=s.id) }}" class="icon-btn" title="Capture faces" onclick="event.stopPropagation()">
+            <svg viewBox="0 0 24 24"><path d="M4 4h5V2H2v7h2V4zm0 16v-5H2v7h7v-2H4zm16-16h-7v2h5v5h2V4zm-2 16h-5v2h7v-7h-2v5zM8 11a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm8 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/></svg>
+          </a>
+          <button class="icon-btn danger" title="Delete student" onclick="event.stopPropagation(); deleteStudent({{ s.id }}, '{{ s.name|escape }}')">
+            <svg viewBox="0 0 24 24"><path d="M6 7h12l-1 13H7L6 7zm3-3h6l1 2H8l1-2z"/></svg>
+          </button>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+
+<div id="add-student-modal" class="modal-backdrop hidden">
+  <div class="modal glass-panel">
+    <button class="modal-close" onclick="closeAddStudentModal()">&times;</button>
+    <h2>Add Student</h2>
+    <form id="add-student-form" class="stacked-form">
+      <label><span>Full name</span><input type="text" name="name" required></label>
+      <label><span>Roll number</span><input type="text" name="roll_no" required></label>
+      <label><span>Email</span><input type="email" name="email"></label>
+      <div class="form-row">
+        <label><span>Department</span><input type="text" name="department" placeholder="e.g. Computer Science"></label>
+        <label><span>Year</span><input type="text" name="year" placeholder="e.g. 2nd Year"></label>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Save &amp; capture faces</button>
+    </form>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/students.js') }}"></script>
+{% endblock %}

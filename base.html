@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}{{ system_name }}{% endblock %} · {{ college_short }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+<link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% block head %}{% endblock %}
+</head>
+<body class="pre-load">
+
+  <div id="loader" class="loader-screen">
+    <div class="loader-scan">
+      <svg viewBox="0 0 64 64" class="loader-face">
+        <circle cx="32" cy="24" r="12" fill="none" stroke="currentColor" stroke-width="2.5"/>
+        <path d="M12 56c2-12 10-18 20-18s18 6 20 18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <div class="loader-line"></div>
+    </div>
+    <p class="loader-text">Initializing <span>{{ system_name }}</span>&hellip;</p>
+  </div>
+
+  {% if session.get('admin_logged_in') %}
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark">
+          <img src="{{ url_for('static', filename='img/logo-mark.png') }}" alt="{{ system_name }}">
+        </div>
+        <div class="brand-text">
+          <strong>{{ system_name }}</strong>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <a href="{{ url_for('dashboard') }}" class="nav-link {{ 'active' if request.endpoint == 'dashboard' }}">
+          <svg viewBox="0 0 24 24"><path d="M4 13h6V4H4v9zm0 7h6v-5H4v5zm10 0h6V11h-6v9zm0-16v5h6V4h-6z"/></svg>
+          <span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('students') }}" class="nav-link {{ 'active' if request.endpoint in ['students','capture_page'] }}">
+          <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
+          <span>Students</span>
+        </a>
+        <a href="{{ url_for('scan_page') }}" class="nav-link {{ 'active' if request.endpoint == 'scan_page' }}">
+          <svg viewBox="0 0 24 24"><path d="M4 4h5V2H2v7h2V4zm0 16v-5H2v7h7v-2H4zm16-16h-7v2h5v5h2V4zm-2 16h-5v2h7v-7h-2v5zM8 11a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm8 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/></svg>
+          <span>Scan Attendance</span>
+        </a>
+        <a href="{{ url_for('attendance') }}" class="nav-link {{ 'active' if request.endpoint == 'attendance' }}">
+          <svg viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2V2h-2v2H9V2H7zM5 9h14v11H5V9zm2 3h4v2H7v-2zm0 4h4v2H7v-2z"/></svg>
+          <span>Attendance Log</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-foot">
+        <a href="{{ url_for('logout') }}" class="nav-link logout">
+          <svg viewBox="0 0 24 24"><path d="M16 13v-2H7V8l-5 4 5 4v-3h9zm3-10H10a2 2 0 00-2 2v3h2V5h9v14h-9v-3H8v3a2 2 0 002 2h9a2 2 0 002-2V5a2 2 0 00-2-2z"/></svg>
+          <span>Sign out</span>
+        </a>
+      </div>
+    </aside>
+
+    <div class="main-col">
+      <header class="topbar">
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+        <div class="page-heading">
+          <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+          <p class="page-subtitle">{% block page_subtitle %}&nbsp;{% endblock %}</p>
+        </div>
+        <form class="topbar-search" action="{{ url_for('students') }}" method="GET">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 10-.7.7l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 1114 9.5 4.5 4.5 0 019.5 14z"/></svg>
+          <input type="text" name="q" placeholder="Search students&hellip;">
+        </form>
+        <div class="topbar-right">
+          <div class="live-clock" id="live-clock">
+            <span id="clock-time">--:--:--</span>
+            <span id="clock-date">&nbsp;</span>
+          </div>
+          <div class="admin-chip">
+            <div class="admin-avatar">{{ (session.get('admin_username') or 'A')[0]|upper }}</div>
+            <div class="admin-chip-text">
+              <strong>{{ session.get('admin_username', 'Admin')|capitalize }}</strong>
+              <span>Administrator</span>
+            </div>
+            <svg class="chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+          </div>
+        </div>
+      </header>
+
+      <main class="content page-enter">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+  {% else %}
+    <main class="page-enter">
+      {% block auth_content %}{% endblock %}
+    </main>
+  {% endif %}
+
+  <div id="toast-container" class="toast-container"></div>
+
+  <div id="student-modal" class="modal-backdrop hidden">
+    <div class="modal glass-panel">
+      <button class="modal-close" id="modal-close" aria-label="Close">&times;</button>
+      <div id="modal-body"><!-- filled by JS --></div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/toast.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/clock.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

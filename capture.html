@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Capture &middot; {{ student.name }}{% endblock %}
+{% block page_title %}Capture Faces{% endblock %}
+
+{% block content %}
+<div class="capture-layout">
+  <div class="panel glass-panel scan-panel">
+    <div class="cam-wrap" id="cam-wrap">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="overlay"></canvas>
+      <div class="scan-sweep"></div>
+      <div class="cam-status" id="cam-status">Position face in frame</div>
+    </div>
+    <div class="capture-controls">
+      <button class="btn btn-primary" id="start-capture">
+        <svg viewBox="0 0 24 24"><path d="M4 4h5V2H2v7h2V4zm0 16v-5H2v7h7v-2H4zm16-16h-7v2h5v5h2V4zm-2 16h-5v2h7v-7h-2v5zM8 11a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm8 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/></svg>
+        Start Capture
+      </button>
+      <button class="btn btn-ghost" id="stop-capture" disabled>Stop</button>
+    </div>
+  </div>
+
+  <div class="panel glass-panel capture-side">
+    <div class="student-card">
+      <div class="row-avatar large">{{ student.name[0]|upper }}</div>
+      <div>
+        <h3>{{ student.name }}</h3>
+        <p class="mono muted">{{ student.roll_no }} &middot; {{ student.department or 'No department' }}</p>
+      </div>
+    </div>
+
+    <div class="progress-block">
+      <div class="progress-labels">
+        <span>Samples captured</span>
+        <span class="mono" id="progress-text">{{ student.samples_captured }}/{{ target_samples }}</span>
+      </div>
+      <div class="mini-progress large">
+        <div class="mini-progress-bar" id="progress-bar" style="width: {{ [ (student.samples_captured / target_samples * 100), 100 ] | min }}%"></div>
+      </div>
+    </div>
+
+    <ul class="tips-list">
+      <li>Look straight at the camera in good lighting.</li>
+      <li>Slowly turn your head slightly left, right, up and down while capturing.</li>
+      <li>Remove sunglasses or masks for accurate recognition.</li>
+    </ul>
+
+    <button class="btn btn-primary btn-block" id="train-btn" {{ 'disabled' if student.samples_captured < target_samples }}>
+      Train Recognition Model
+    </button>
+    <a href="{{ url_for('students') }}" class="btn btn-ghost btn-block">Back to Students</a>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const STUDENT_ID = {{ student.id }};
+  const TARGET_SAMPLES = {{ target_samples }};
+</script>
+<script src="{{ url_for('static', filename='js/capture.js') }}"></script>
+{% endblock %}

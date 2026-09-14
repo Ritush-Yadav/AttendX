@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Attendance Log{% endblock %}
+{% block page_title %}Attendance Log{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+  <form class="date-filter" method="GET">
+    <label>
+      <span>Date</span>
+      <input type="date" name="date" value="{{ date_filter }}" onchange="this.form.submit()">
+    </label>
+  </form>
+  <a class="btn btn-primary" href="{{ url_for('export_csv', date=date_filter) }}">
+    <svg viewBox="0 0 24 24"><path d="M12 3v10.5m0 0l-4-4m4 4l4-4M5 19h14v2H5v-2z"/></svg>
+    Export CSV
+  </a>
+</div>
+
+<div class="panel glass-panel table-panel">
+  {% if records|length == 0 %}
+  <div class="empty-state">
+    <svg viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2V2h-2v2H9V2H7z"/></svg>
+    <h3>No attendance recorded</h3>
+    <p>No scans were logged for {{ date_filter }}.</p>
+  </div>
+  {% else %}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Time</th>
+        <th>Roll No</th>
+        <th>Name</th>
+        <th>Department</th>
+        <th>Match Confidence</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td class="mono">{{ r.time }}</td>
+        <td class="mono">{{ r.roll_no }}</td>
+        <td>{{ r.name }}</td>
+        <td>{{ r.department or '—' }}</td>
+        <td><span class="badge badge-teal">{{ '%.1f'|format(r.confidence) if r.confidence is not none else '—' }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+{% endblock %}

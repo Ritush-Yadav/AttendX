@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block auth_content %}
+<div class="auth-screen">
+  <div class="auth-panel glass-panel">
+    <div class="auth-brand">
+      <img class="auth-logo" src="{{ url_for('static', filename='img/logo.png') }}" alt="{{ system_name }}">
+      <p>{{ college_name }} &middot; Face Recognition Attendance</p>
+    </div>
+
+    {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" class="auth-form">
+      <label>
+        <span>Username</span>
+        <input type="text" name="username" autocomplete="username" required autofocus>
+      </label>
+      <label>
+        <span>Password</span>
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+    </form>
+
+    <p class="auth-hint">Default credentials: <code>admin</code> / <code>admin123</code></p>
+  </div>
+  <div class="auth-scanlines" aria-hidden="true"></div>
+</div>
+{% endblock %}

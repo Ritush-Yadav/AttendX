@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Scan Attendance{% endblock %}
+{% block page_title %}Scan Attendance{% endblock %}
+
+{% block content %}
+<div class="capture-layout">
+  <div class="panel glass-panel scan-panel">
+    <div class="cam-wrap" id="cam-wrap">
+      <video id="video" autoplay playsinline muted></video>
+      <canvas id="overlay"></canvas>
+      <div class="scan-sweep" id="scan-sweep"></div>
+      <div class="cam-status" id="cam-status">Scanner idle</div>
+    </div>
+    <div class="capture-controls">
+      <button class="btn btn-primary" id="start-scan">
+        <svg viewBox="0 0 24 24"><path d="M4 4h5V2H2v7h2V4zm0 16v-5H2v7h7v-2H4zm16-16h-7v2h5v5h2V4zm-2 16h-5v2h7v-7h-2v5zM8 11a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm8 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/></svg>
+        Start Scanner
+      </button>
+      <button class="btn btn-ghost" id="stop-scan" disabled>Stop</button>
+    </div>
+  </div>
+
+  <div class="panel glass-panel capture-side">
+    <div class="panel-head no-margin">
+      <h2>Recognized just now</h2>
+    </div>
+    <div id="recent-feed" class="recent-feed">
+      <p class="muted small">Matches will appear here as they're scanned.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/scan.js') }}"></script>
+{% endblock %}

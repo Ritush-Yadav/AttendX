@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Welcome back, {{ session.get('admin_username','Admin')|capitalize }} &#128075;{% endblock %}
+
+{% block content %}
+<div class="stat-grid">
+  <div class="stat-card" data-accent="blue">
+    <div class="stat-top">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
+      </div>
+      <span class="stat-label">Total Students</span>
+    </div>
+    <strong class="stat-value" id="stat-total">&mdash;</strong>
+    <span class="stat-sub">Enrolled in system</span>
+    <svg class="stat-watermark" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+  </div>
+
+  <div class="stat-card" data-accent="green">
+    <div class="stat-top">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+      </div>
+      <span class="stat-label">Present Today</span>
+    </div>
+    <strong class="stat-value" id="stat-present">&mdash;</strong>
+    <span class="stat-sub" id="stat-rate">&mdash;</span>
+    <svg class="stat-watermark" viewBox="0 0 24 24"><path d="M3 17h2v-6H3v6zm4 0h2V7H7v10zm4 0h2v-4h-2v4zm4 0h2V5h-2v12zm4 0h2v-8h-2v8z"/></svg>
+  </div>
+
+  <div class="stat-card" data-accent="rose">
+    <div class="stat-top">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg>
+      </div>
+      <span class="stat-label">Absent Today</span>
+    </div>
+    <strong class="stat-value" id="stat-absent">&mdash;</strong>
+    <span class="stat-sub">Not yet scanned</span>
+    <svg class="stat-watermark" viewBox="0 0 24 24"><path d="M12 12a5 5 0 100-10 5 5 0 000 10zm0 2c-4.4 0-8 2.2-8 5v2h16v-2c0-2.8-3.6-5-8-5z"/></svg>
+  </div>
+
+  <div class="stat-card" data-accent="amber">
+    <div class="stat-top">
+      <div class="stat-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+      </div>
+      <span class="stat-label">Model Ready</span>
+    </div>
+    <strong class="stat-value" id="stat-trained">&mdash;</strong>
+    <span class="stat-sub">Students trained</span>
+    <svg class="stat-watermark" viewBox="0 0 24 24"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg>
+  </div>
+</div>
+
+<div class="panel-grid">
+  <div class="panel glass-panel panel-wide">
+    <div class="panel-head">
+      <h2><svg viewBox="0 0 24 24"><path d="M3 17h2v-6H3v6zm4 0h2V7H7v10zm4 0h2v-4h-2v4zm4 0h2V5h-2v12zm4 0h2v-8h-2v8z"/></svg>Attendance &middot; Last 7 Days</h2>
+      <div class="range-pill">Last 7 Days
+        <svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+      </div>
+    </div>
+    <canvas id="trendChart" height="110"></canvas>
+  </div>
+  <div class="panel glass-panel">
+    <div class="panel-head">
+      <h2><svg viewBox="0 0 24 24"><path d="M11 2v9H2c0 5 4.5 9 9 9a9 9 0 100-18zm2 0v8.99h9A9 9 0 0013 2z"/></svg>By Department</h2>
+    </div>
+    <div class="donut-wrap">
+      <canvas id="deptChart"></canvas>
+      <div class="donut-center">
+        <strong id="donut-total">&mdash;</strong>
+        <span>Total Students</span>
+      </div>
+    </div>
+    <div id="dept-legend" class="dept-legend"></div>
+  </div>
+</div>
+
+<div class="quick-actions">
+  <a href="{{ url_for('scan_page') }}" class="action-card" data-accent="blue">
+    <div class="action-icon">
+      <svg viewBox="0 0 24 24"><path d="M4 4h5V2H2v7h2V4zm0 16v-5H2v7h7v-2H4zm16-16h-7v2h5v5h2V4zm-2 16h-5v2h7v-7h-2v5zM8 11a1.5 1.5 0 100 3 1.5 1.5 0 000-3zm8 0a1.5 1.5 0 100 3 1.5 1.5 0 000-3z"/></svg>
+    </div>
+    <div class="action-text"><strong>Scan Attendance</strong><span>Open live camera and mark attendance</span></div>
+    <span class="action-arrow"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+  </a>
+  <a href="{{ url_for('students') }}#add" class="action-card" data-accent="green">
+    <div class="action-icon">
+      <svg viewBox="0 0 24 24"><path d="M15 12c2.2 0 4-1.8 4-4s-1.8-4-4-4-4 1.8-4 4 1.8 4 4 4zM6 10V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+    </div>
+    <div class="action-text"><strong>Enroll Student</strong><span>Add new student and capture faces</span></div>
+    <span class="action-arrow"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+  </a>
+  <a href="{{ url_for('attendance') }}" class="action-card" data-accent="violet">
+    <div class="action-icon">
+      <svg viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2h-2V2h-2v2H9V2H7zM5 9h14v11H5V9z"/></svg>
+    </div>
+    <div class="action-text"><strong>Attendance Log</strong><span>View and manage attendance records</span></div>
+    <span class="action-arrow"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+  </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}
